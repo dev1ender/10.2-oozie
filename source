@@ -1,0 +1,23 @@
+//used to start the demons in cloudera vm
+su
+
+//used to put file in hdfs
+hadoop fs -put /home/cloudera/Assignment/10.2/student.txt /user/cloudera/10.2
+
+//setting class for file for pig
+export PIG_CLASSPATH = /usr/lib/hbase/hbase*.jar
+
+//used to load data into the pig
+pig -x loacl
+ loadData = LOAD '/home/cloudera/Assignment/10.2/student.txt' USING PigStorage(',') AS (StudentName:chararray,sector:chararray,DOB:chararray,qualification:chararray,score:chararray,state:chararray,randomName:chararray);
+
+//store the data into the hbase
+STORE loadData INTO 'hbase://studentData' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage
+('student_data:StudentName,student_data:sector,student_data:DOB,student_data:qualification,student_data:score,student_data:state,student_data:randomName');
+
+//running hbase shell
+hbase shell
+
+
+//scanning the table studentData to confirm the data upload
+scan 'studentData'
